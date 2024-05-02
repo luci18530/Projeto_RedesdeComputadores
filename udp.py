@@ -42,7 +42,7 @@ def main():
     ip_servidor = "15.228.191.109"
     porta_servidor = 50000
 
-    # Socket do cliente
+    # Socket do cliente UDP SIMPLES
     socket_cliente = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     print("\nBem-vindo ao sistema de requisições UDP!")
