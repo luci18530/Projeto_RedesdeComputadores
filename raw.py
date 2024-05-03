@@ -25,7 +25,7 @@ def calcular_checksum(pseudo_cabecalho, cabecalho_udp, tipo_requisicao):
 
 def cliente_raw(ip_servidor, porta_servidor):
     # Socket do cliente UDP RAW
-    socket_cliente = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RDP)
+    socket_cliente = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)
 
     print("\n* Você está dentro do cliente RAW *")
 
