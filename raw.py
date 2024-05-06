@@ -28,7 +28,7 @@ def calcular_checksum(
         dados_checksum += b"\x00"
 
     checksum = 0
-    # itera sobre os dados em pares de bytes
+    # itera sobre os dados em pares de bytes (2 em 2)
     for i in range(0, len(dados_checksum), 2):
         # combina pares de 2 bytes
         par_de_bytes = (dados_checksum[i] << 8) + dados_checksum[i + 1]
