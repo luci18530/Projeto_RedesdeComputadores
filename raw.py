@@ -1,19 +1,7 @@
 import socket
 import struct
 
-from utils import gerar_identificador
-
-
-def criar_payload(tipo_requisicao, identificador):
-    # Cria a mensagem com base nos campos especificados
-    req_res = 0  # 0000 para requisição
-    req_res_and_tipo = (
-        req_res | tipo_requisicao
-    )  # Combina os campos de requisicao/resposta e tipo
-    payload = struct.pack(
-        ">BH", req_res_and_tipo, identificador
-    )  # >BH -> Big-endian, 1 Byte (para o tipo e requisicao), 2 Bytes (para o identificador)
-    return payload
+from utils import criar_payload, gerar_identificador
 
 
 def calcular_checksum(
@@ -25,7 +13,7 @@ def calcular_checksum(
     payload,
 ):
 
-    # combina o pseudo cabeçalho, cabeçalho UDP e dados
+    # combina o pseudo cabeçalho IP, cabeçalho UDP e dados
     dados_checksum = (
         cabecalho_ip
         + porta_origem
@@ -78,7 +66,9 @@ def criar_cabecalho_udp(
     comprimento_udp = struct.pack(">H", comprimento)
 
     checksum_provisorio = b"\x00"
+
     cabecalho_ip = criar_cabecalho_ip(ip_origem, ip_destino, comprimento_udp)
+
     checksum = calcular_checksum(
         cabecalho_ip,
         porta_origem,
@@ -87,6 +77,7 @@ def criar_cabecalho_udp(
         checksum_provisorio,
         payload,
     )
+
     checksum = struct.pack(">H", checksum)
 
     return porta_origem + porta_destino + comprimento_udp + checksum
@@ -135,11 +126,6 @@ def cliente_raw(ip_servidor, porta_servidor):
         payload = criar_payload(tipo_requisicao, identificador)
         comprimento = 8 + len(payload)  # 8 bytes do cabeçalho + payload
 
-        comprimento_udp = struct.pack(">H", comprimento)
-
-        # cabecalho_ip = criar_cabecalho_ip(ip_origem, ip_destino, comprimento)
-
-        cabecalho_ip = criar_cabecalho_ip(ip_origem, ip_destino, comprimento_udp)
         cebecalho_udp = criar_cabecalho_udp(
             porta_origem,
             porta_destino,
@@ -148,8 +134,6 @@ def cliente_raw(ip_servidor, porta_servidor):
             comprimento,
             payload,
         )
-        print(f"cabeçalho ip: {cabecalho_ip}")
-        print(f"cabeçalho udp: {cebecalho_udp}")
 
         datagrama = cebecalho_udp + payload
 
@@ -158,12 +142,7 @@ def cliente_raw(ip_servidor, porta_servidor):
             socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP
         )
 
-        print(f"datagrama: {datagrama}")
-
-        socket_cliente.sendto(
-            datagrama,
-            (ip_servidor, porta_servidor),
-        )
+        socket_cliente.sendto(datagrama, (ip_servidor, porta_servidor))
 
         # recebe a resposta
         resposta, _ = socket_cliente.recvfrom(2056)
@@ -175,15 +154,3 @@ def cliente_raw(ip_servidor, porta_servidor):
 
     # fechando o socket
     socket_cliente.close()
-
-
-def main():
-    # informações do servidor
-    ip_servidor = "15.228.191.109"
-    porta_servidor = 5000
-
-    cliente_raw(ip_servidor, porta_servidor)
-
-
-if __name__ == "__main__":
-    main()

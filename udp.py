@@ -1,20 +1,7 @@
 import socket
 import struct
 
-from utils import gerar_identificador
-
-
-def criar_requisicao(tipo_requisicao, identificador):
-    # Cria a mensagem com base nos campos especificados
-    req_res = 0  # 0000 para requisição
-    # Combina os campos de requisicao/resposta e tipo
-
-    req_res_and_tipo = req_res | tipo_requisicao
-    # >BH -> Big-endian, 1 Byte (para o tipo e requisicao), 2 Bytes (para o identificador)
-
-    mensagem_requisicao = struct.pack(">BH", req_res_and_tipo, identificador)
-
-    return mensagem_requisicao
+from utils import criar_payload, gerar_identificador
 
 
 def analisar_resposta(resposta):
@@ -47,9 +34,6 @@ def analisar_resposta(resposta):
 
 
 def cliente_udp(ip_servidor, porta_servidor):
-    # Socket do cliente UDP SIMPLES
-    socket_cliente = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
     print("\n* Você está dentro do cliente UDP *")
 
     while True:
@@ -79,12 +63,12 @@ def cliente_udp(ip_servidor, porta_servidor):
             continue
 
         # Cria a mensagem
-        requisicao = criar_requisicao(tipo_requisicao, identificador)
+        requisicao = criar_payload(tipo_requisicao, identificador)
         # Envia a requisicao
+        socket_cliente = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         socket_cliente.sendto(requisicao, (ip_servidor, porta_servidor))
         # Recebe a resposta
         resposta, _ = socket_cliente.recvfrom(256)
-        print(resposta)
 
         # Analisa a resposta
         tipo_resposta, identificador, texto_resposta = analisar_resposta(resposta)
