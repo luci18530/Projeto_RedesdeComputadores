@@ -23,7 +23,7 @@ def calcular_checksum(
         + payload
     )
 
-    # se o comprimento dos dados for ímpar, adiciona um byte zero para torná-lo par
+    # se o comprimento dos dados for ímpar, adiciona o byte zero para se tornar par
     if len(dados_checksum) % 2 != 0:
         dados_checksum += b"\x00"
 
@@ -34,10 +34,10 @@ def calcular_checksum(
         par_de_bytes = (dados_checksum[i] << 8) + dados_checksum[i + 1]
         # soma a par_de_bytes ao checksum
         checksum += par_de_bytes
-        # se houver um carry (vai para o próximo bit mais significativo), adiciona ao checksum
+        # se houver um carry, adiciona ao checksum
         if checksum & 0xFFFF0000:
             checksum = (checksum & 0xFFFF) + 1
-    # retorna o complemento de um do checksum (16 bits)
+    # retorna o complemento de um do checksum
     return ~checksum & 0xFFFF
 
 
@@ -77,15 +77,40 @@ def criar_cabecalho_udp(
         checksum_provisorio,
         payload,
     )
-
     checksum = struct.pack(">H", checksum)
 
     return porta_origem + porta_destino + comprimento_udp + checksum
 
 
 def analisar_resposta(resposta):
-    pass
-    # TODO
+    if len(resposta) < 4:
+        raise ValueError("Resposta muito curta para ser descompactada.")
+    else:
+        # ignora os cabeçalhos IP e UDP
+        resposta = resposta[28:]
+        # Descompacta os campos principais da resposta
+        # Primeiro byte contem req/res e tipo e o segundo/terceiro byte contem o identificador
+        req_res_and_tipo, identificador = struct.unpack(">BH", resposta[:3])
+        # Extrai os 4 bits menos significativos (tipo de resposta)
+        tipo_resposta = req_res_and_tipo & 0x0F
+
+        tamanho_resposta = resposta[3]
+
+        if tamanho_resposta == 0:
+            texto_resposta = "Nenhuma resposta (REQUISIÇÃO INVÁLIDA)"
+        else:
+            if tipo_resposta == 2:
+                # Converte os bytes para um numero inteiro em formato decimal (big-endian)
+                resposta_decimal = int.from_bytes(
+                    resposta[4 : 4 + tamanho_resposta], byteorder="big"
+                )
+                texto_resposta = str(
+                    resposta_decimal
+                )  # Converte para string para exibir
+            else:
+                texto_resposta = resposta[4 : 4 + tamanho_resposta].decode("utf-8")
+
+    return tipo_resposta, identificador, texto_resposta
 
 
 def cliente_raw(ip_servidor, porta_servidor):
@@ -94,9 +119,8 @@ def cliente_raw(ip_servidor, porta_servidor):
     ip_origem = str(socket.gethostbyname(socket.gethostname()))
     ip_destino = ip_servidor
 
-    print("\n* Você está dentro do cliente RAW *")
-
     while True:
+        print("\n* Você está dentro do cliente RAW *")
         print("\nSeleciona uma opção: ")
         print("1. Data e hora atual")
         print("2. Mensagem motivacional")
@@ -137,20 +161,24 @@ def cliente_raw(ip_servidor, porta_servidor):
 
         datagrama = cebecalho_udp + payload
 
-        # envia o pacote UDP
+        # cria o socket cliente
         socket_cliente = socket.socket(
-            socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP
+            socket.AF_INET,
+            socket.SOCK_RAW,
+            socket.IPPROTO_UDP,
         )
 
+        # envia a requisição para o servidor
         socket_cliente.sendto(datagrama, (ip_servidor, porta_servidor))
 
         # recebe a resposta
         resposta, _ = socket_cliente.recvfrom(2056)
-        print(f"resposta: {resposta}")
 
         # analisa a resposta
-        # tipo_resposta, identificador, texto_resposta = analisar_resposta(resposta)
-        # print(f"\nRESPOSTA RECEBIDA: \nTIPO {tipo_resposta} \nID {identificador} \n{texto_resposta}")
+        tipo_resposta, identificador, texto_resposta = analisar_resposta(resposta)
+        print(
+            f"\nResposta recebida (Tipo {tipo_resposta}, ID {identificador}): {texto_resposta}"
+        )
 
     # fechando o socket
     socket_cliente.close()

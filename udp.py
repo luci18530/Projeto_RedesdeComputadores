@@ -24,9 +24,8 @@ def analisar_resposta(resposta):
                 resposta_decimal = int.from_bytes(
                     resposta[4 : 4 + tamanho_resposta], byteorder="big"
                 )
-                texto_resposta = str(
-                    resposta_decimal
-                )  # Converte para string para exibir
+                # converte para string para exibir resposta
+                texto_resposta = str(resposta_decimal)
             else:
                 texto_resposta = resposta[4 : 4 + tamanho_resposta].decode("utf-8")
 
@@ -34,9 +33,8 @@ def analisar_resposta(resposta):
 
 
 def cliente_udp(ip_servidor, porta_servidor):
-    print("\n* Você está dentro do cliente UDP *")
-
     while True:
+        print("\n* Você está dentro do cliente UDP *")
         print("\nSelecione uma opção:")
         print("1. Data e hora atual")
         print("2. Mensagem motivacional para o fim do semestre")
@@ -64,9 +62,11 @@ def cliente_udp(ip_servidor, porta_servidor):
 
         # Cria a mensagem
         requisicao = criar_payload(tipo_requisicao, identificador)
-        # Envia a requisicao
+
+        # cria socket udp e envia a requisição
         socket_cliente = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         socket_cliente.sendto(requisicao, (ip_servidor, porta_servidor))
+
         # Recebe a resposta
         resposta, _ = socket_cliente.recvfrom(256)
 

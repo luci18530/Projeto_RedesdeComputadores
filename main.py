@@ -3,7 +3,7 @@ from raw import cliente_raw
 
 
 def main():
-    # Informações do servidor
+    # informações do servidor
     ip_servidor = "15.228.191.109"
     porta_servidor = 50000
 
@@ -11,7 +11,7 @@ def main():
         print("\n* Bem-vindo ao sistema de requisições UDP/RAW *")
         print("\nSelecione uma opção:")
         print("1. Requisição UDP Socket")
-        print("2. Requisição RAW Socket (A FAZER)")
+        print("2. Requisição RAW Socket")
         print("3. Sair")
 
         escolha = input("Digite sua escolha (1-4): ")
@@ -19,7 +19,7 @@ def main():
         if escolha == "1":
             cliente_udp(ip_servidor, porta_servidor)
         elif escolha == "2":
-            cliente_raw(ip_servidor, porta_servidor)  ## a ser implementado
+            cliente_raw(ip_servidor, porta_servidor)
         elif escolha == "3":
             print("\nSaindo do programa principal...")
             break
