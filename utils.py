@@ -1,9 +1,23 @@
 import random
+import socket
 import struct
 
 
 def gerar_identificador():
     return random.randint(1, 65535)
+
+
+def obter_ip_local():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.settimeout(0)
+    try:
+        s.connect(("8.8.8.8", 80))
+        endereco_ip = s.getsockname()[0]
+    except Exception:
+        endereco_ip = "127.0.0.1"
+    finally:
+        s.close()
+    return endereco_ip
 
 
 def criar_payload(tipo_requisicao, identificador):

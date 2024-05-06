@@ -1,7 +1,7 @@
 import socket
 import struct
 
-from utils import criar_payload, gerar_identificador
+from utils import criar_payload, gerar_identificador, obter_ip_local
 
 
 def calcular_checksum(
@@ -116,7 +116,7 @@ def analisar_resposta(resposta):
 def cliente_raw(ip_servidor, porta_servidor):
     porta_origem = 59155
     porta_destino = porta_servidor
-    ip_origem = str(socket.gethostbyname(socket.gethostname()))
+    ip_origem = obter_ip_local()
     ip_destino = ip_servidor
 
     while True:
