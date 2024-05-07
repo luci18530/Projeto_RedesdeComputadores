@@ -1,6 +1,17 @@
 from sockets.udp import cliente_udp
 from sockets.raw import cliente_raw
 
+"""
+GRUPO: ISABELLA NUNES DE OLIVEIRA, 
+LUCIANO PEREIRA DE OLIVEIRA FILHO E
+PEDRO LUCAS DA SILVA DOS SANTOS
+"""
+
+"""
+O ÚNICO ARQUIVO QUE DEVE SER EXECUTADO É ESSE.
+"python main.py"
+"""
+
 
 def main():
     # informações do servidor
