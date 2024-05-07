@@ -1,5 +1,5 @@
-from udp import cliente_udp
-from raw import cliente_raw
+from sockets.udp import cliente_udp
+from sockets.raw import cliente_raw
 
 
 def main():
