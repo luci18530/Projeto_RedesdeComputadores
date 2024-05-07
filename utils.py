@@ -26,7 +26,7 @@ def criar_payload(tipo_requisicao, identificador):
     # Combina os campos de requisicao/resposta e tipo
     req_res_and_tipo = req_res | tipo_requisicao
 
-    # >BH -> Big-endian, 1 Byte (para o tipo e requisicao), 2 Bytes (para o identificador)
+    # >BH -> big-endian, 1 byte para o tipo e requisicao, 2 bytes para o identificador
     payload = struct.pack(">BH", req_res_and_tipo, identificador)
 
     return payload

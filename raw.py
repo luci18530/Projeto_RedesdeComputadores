@@ -13,7 +13,7 @@ def calcular_checksum(
     payload,
 ):
 
-    # combina o pseudo cabeçalho IP, cabeçalho UDP e dados
+    # combina o pseudo cabeçalho IP, cabeçalho UDP e os dados
     dados_checksum = (
         cabecalho_ip
         + porta_origem
@@ -30,9 +30,9 @@ def calcular_checksum(
     checksum = 0
     # itera sobre os dados em pares de bytes (2 em 2)
     for i in range(0, len(dados_checksum), 2):
-        # combina pares de 2 bytes
+        # combina os pares de 2 bytes
         par_de_bytes = (dados_checksum[i] << 8) + dados_checksum[i + 1]
-        # soma a par_de_bytes ao checksum
+        # soma o par de bytes ao checksum
         checksum += par_de_bytes
         # se houver um carry, adiciona ao checksum
         if checksum & 0xFFFF0000:
@@ -65,7 +65,7 @@ def criar_cabecalho_udp(
     porta_destino = struct.pack(">H", porta_destino)
     comprimento_udp = struct.pack(">H", comprimento)
 
-    checksum_provisorio = b"\x00"
+    checksum_provisorio = b"\x00"  # o checksum inicia como zero
 
     cabecalho_ip = criar_cabecalho_ip(ip_origem, ip_destino, comprimento_udp)
 
