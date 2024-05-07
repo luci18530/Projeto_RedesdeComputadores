@@ -1,7 +1,7 @@
 import socket
 import struct
 
-from utils import criar_payload, gerar_identificador, obter_ip_local
+from utils.utils import criar_payload, gerar_identificador, obter_ip_local
 
 
 def calcular_checksum(

@@ -1,7 +1,7 @@
 import socket
 import struct
 
-from utils import criar_payload, gerar_identificador
+from utils.utils import criar_payload, gerar_identificador
 
 
 def analisar_resposta(resposta):
